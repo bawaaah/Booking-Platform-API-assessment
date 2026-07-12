@@ -39,17 +39,15 @@ import * as Joi from 'joi';
     // Database connection
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres' as const,
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.database'),
-        autoLoadEntities: true,
-        synchronize: configService.get<string>('database.synchronize') === 'true'
-          || configService.get<string>('NODE_ENV') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const dbConfig = configService.get('database');
+        return {
+          ...dbConfig,
+          synchronize:
+            configService.get<string>('database.synchronize') === 'true' ||
+            configService.get<string>('NODE_ENV') === 'development',
+        };
+      },
     }),
 
     // Feature modules
@@ -76,4 +74,4 @@ import * as Joi from 'joi';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
