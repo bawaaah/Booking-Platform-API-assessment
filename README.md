@@ -294,7 +294,7 @@ CANCELLED   CANCELLED
 
 ## 📬 Submission
 
-- **GitHub Repository:** `<your-repo-url>`
+- **GitHub Repository:** [https://github.com/bawaaah/Booking-Platform-API-assessment](https://github.com/bawaaah/Booking-Platform-API-assessment)
 - **Swagger Docs:** `http://localhost:3000/api/docs` (local) or `http://localhost:3001/api/docs` (docker)
 - **Contact:** Developed for EN2H technical assessment
 
