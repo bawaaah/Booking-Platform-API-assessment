@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: booking_platform_db
+    environment:
+      POSTGRES_DB: booking_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - booking_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── NestJS API ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: booking_platform_api
+    ports:
+      - "3001:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: booking_platform
+      JWT_ACCESS_SECRET: dev-access-secret-key-12345
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_SECRET: dev-refresh-secret-key-67890
+      JWT_REFRESH_EXPIRATION: 7d
+      PORT: 3000
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - booking_network
+    restart: unless-stopped
+
+# ── Volumes & Networks ─────────────────────────────────────────────────────────
+volumes:
+  pgdata:
+
+networks:
+  booking_network:
+    driver: bridge
